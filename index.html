@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bharat Heritage Quest - Interactive India Historical Places Game</title>
+  <meta name="description" content="An interactive Indian history learning game for children featuring an interactive map of India, monument stories, videos, quizzes, puzzles, and an explorer passport." />
+
+  <!-- Google Fonts: Outfit & Fredoka -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./src/style.css" />
+</head>
+<body>
+  <div class="app-root">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="brand-badge" id="brandLogo">
+          <div class="chakra-icon-spin">☸️</div>
+          <div class="brand-text">
+            <h1 class="brand-title">Bharat Heritage Quest</h1>
+            <span class="brand-subtitle">Interactive India Historical Places & Heroes</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Player Progress Capsule -->
+      <div class="header-center">
+        <div class="player-progress-capsule" id="openPassportBtn" role="button" tabindex="0" title="View Explorer Passport & Badges">
+          <div class="player-avatar" id="topPlayerLevelIcon">🌱</div>
+          <div class="player-info">
+            <div class="player-rank-row">
+              <span class="player-rank" id="topPlayerLevel">Village Scout</span>
+              <span class="player-xp-chip" id="topPlayerXp">50 XP</span>
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="topProgressBar" style="width: 25%;"></div>
+            </div>
+          </div>
+          <div class="passport-quick-badge">🛂 Passport</div>
+        </div>
+      </div>
+
+      <!-- Audio & Theme Controls -->
+      <div class="header-right">
+        <button class="audio-btn" id="soundToggleBtn" title="Toggle Sound FX">🔊 Sound FX</button>
+        <button class="audio-btn" id="musicToggleBtn" title="Play Authentic Indian Melody">🪕 Ambient Tone</button>
+        <button class="audio-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode">🌙 Dark Mode</button>
+      </div>
+    </header>
+
+    <!-- Sub-Navbar: Navigation Tabs & Search -->
+    <nav class="sub-nav-bar">
+      <div class="nav-tabs-group">
+        <button class="nav-tab-btn active" data-view="map" id="navMapTab">
+          <span class="tab-icon">🗺️</span>
+          <span>Interactive Map</span>
+        </button>
+        <button class="nav-tab-btn" data-view="quiz" id="navQuizTab">
+          <span class="tab-icon">🎯</span>
+          <span>Quiz Arena</span>
+        </button>
+        <button class="nav-tab-btn" data-view="puzzle" id="navPuzzleTab">
+          <span class="tab-icon">🧩</span>
+          <span>Puzzle Arcade</span>
+        </button>
+        <button class="nav-tab-btn" data-view="riddle" id="navRiddleTab">
+          <span class="tab-icon">🕵️</span>
+          <span>Riddle Detective</span>
+        </button>
+        <button class="nav-tab-btn" data-view="timeline" id="navTimelineTab">
+          <span class="tab-icon">⏳</span>
+          <span>Time Machine</span>
+        </button>
+      </div>
+
+      <!-- Search & Autocomplete Bar -->
+      <div class="search-box-wrapper">
+        <div class="search-input-box">
+          <span class="search-lens">🔍</span>
+          <input type="text" id="heritageSearchInput" placeholder="Search state or monument (e.g. Maharashtra, Ajanta, Taj)..." autocomplete="off" />
+        </div>
+        <div class="search-results-dropdown hidden" id="searchResultsDropdown"></div>
+      </div>
+    </nav>
+
+    <!-- Regional Filter Bar -->
+    <div class="region-filter-bar">
+      <span class="region-label">Explore Regions:</span>
+      <div class="region-pills-list">
+        <button class="region-pill active" data-region="all">All India 🇮🇳</button>
+        <button class="region-pill" data-region="west">West (Maharashtra & Rajasthan)</button>
+        <button class="region-pill" data-region="north">North (Delhi & UP)</button>
+        <button class="region-pill" data-region="south">South (Karnataka & Tamil Nadu)</button>
+        <button class="region-pill" data-region="central">Central (Madhya Pradesh)</button>
+        <button class="region-pill" data-region="east">East (Bihar, Bengal, Odisha)</button>
+        <button class="region-pill" data-region="northeast">North-East (Assam)</button>
+      </div>
+    </div>
+
+    <!-- MAIN VIEW: Interactive Map Stage -->
+    <main class="main-content-stage">
+      <section class="map-view-section" id="mapViewSection">
+        <div class="map-layout-grid">
+          <!-- Central Interactive Map Container -->
+          <div class="map-container-card" id="mapContainer">
+            <!-- Map injected dynamically by IndiaMap -->
+          </div>
+
+          <!-- Slide-out State Explorer Hub (Drawer) -->
+          <aside class="state-explorer-drawer hidden" id="stateExplorerDrawer">
+            <div class="drawer-header">
+              <div class="drawer-header-left">
+                <span class="state-flag-badge">🚩 State Explorer</span>
+                <h2 class="drawer-state-title" id="drawerStateName">Maharashtra</h2>
+                <div class="drawer-state-sub" id="drawerStateCapital">Capital: Mumbai</div>
+              </div>
+              <button class="btn-close-drawer" id="closeDrawerBtn" title="Close Drawer">✖</button>
+            </div>
+
+            <p class="drawer-tagline" id="drawerStateTagline">Land of Brave Forts & Ancient Cave Wonders</p>
+
+            <div class="drawer-action-strip">
+              <button class="btn btn-primary btn-sm" id="drawerStateQuizBtn">
+                🎯 Take State Quiz
+              </button>
+            </div>
+
+            <div class="drawer-places-section">
+              <h3 class="places-section-title">Historical Places to Discover:</h3>
+              <div class="places-cards-list" id="drawerPlacesList">
+                <!-- Places injected dynamically -->
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ACTIVITIES & GAMIFICATION VIEW -->
+      <section class="activities-view-section hidden" id="activitiesViewSection">
+        <div class="activity-stage-container" id="activityGameContainer">
+          <!-- Quiz, Puzzle, Riddle, or Timeline game injected here -->
+        </div>
+      </section>
+    </main>
+
+    <!-- MONUMENT DEEP DIVE MODAL -->
+    <div class="modal-backdrop hidden" id="monumentDetailModal">
+      <div class="modal-dialog monument-dialog animate-scale-up">
+        <button class="modal-close-x" id="closeMonumentModalBtn">✖</button>
+        
+        <div class="monument-modal-content">
+          <!-- Hero Section with Photo and Badge -->
+          <div class="monument-hero-banner">
+            <img src="" alt="" class="modal-hero-image" id="modalHeroImg" />
+            <div class="hero-overlay-info">
+              <div class="hero-chip-row">
+                <span class="hero-chip" id="modalLocation">📍 Aurangabad, Maharashtra</span>
+                <span class="hero-chip" id="modalEra">⏳ 2nd Century BCE</span>
+                <span class="hero-chip" id="modalStyle">🏛️ Rock-cut Buddhist Chaitya</span>
+              </div>
+              <h2 class="modal-place-title" id="modalPlaceName">Ajanta Caves</h2>
+              <div class="modal-hindi-title" id="modalHindiName">अजंता गुफाएं</div>
+            </div>
+          </div>
+
+          <!-- Quick Interactive Bar: Read Aloud & Quizzes -->
+          <div class="modal-action-bar">
+            <button class="btn btn-primary" id="narrateStoryBtn">
+              🔊 Read Story Aloud
+            </button>
+            <button class="btn btn-secondary" id="modalQuizBtn">
+              🎯 Take Quiz
+            </button>
+            <button class="btn btn-secondary" id="modalPuzzleBtn">
+              🧩 Solve Puzzle
+            </button>
+          </div>
+
+          <!-- Body Content: Story, Video, Personality, Fun Facts -->
+          <div class="modal-body-scroll">
+            <!-- Kid Story -->
+            <div class="content-block story-block">
+              <div class="block-header">
+                <span class="block-icon">📖</span>
+                <h3>The Story for Young Explorers</h3>
+              </div>
+              <p class="story-paragraph" id="modalStoryText"></p>
+            </div>
+
+            <!-- Video Capsule -->
+            <div class="content-block video-block" id="modalVideoSection">
+              <!-- Video reel player injected -->
+            </div>
+
+            <!-- Historical Personality -->
+            <div class="content-block personality-block">
+              <div class="block-header">
+                <span class="block-icon">👑</span>
+                <h3>Historical Hero Associated</h3>
+              </div>
+              <div class="personality-card" id="modalPersonalityCard">
+                <!-- Personality details -->
+              </div>
+            </div>
+
+            <!-- Fun Facts / Secrets -->
+            <div class="content-block facts-block">
+              <div class="block-header">
+                <span class="block-icon">✨</span>
+                <h3>Did You Know? Amazing Secrets!</h3>
+              </div>
+              <div class="facts-grid" id="modalFunFactsGrid">
+                <!-- Fact cards -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPLORER PASSPORT MODAL -->
+    <div class="modal-backdrop hidden" id="passportModal">
+      <div class="modal-dialog passport-dialog animate-scale-up">
+        <button class="modal-close-x" id="closePassportModalBtn">✖</button>
+
+        <div class="passport-book">
+          <div class="passport-cover-header">
+            <div class="ashoka-seal">🦁</div>
+            <h2>BHARAT HERITAGE PASSPORT</h2>
+            <p>Official Traveler Record of Republic of India Heritage</p>
+          </div>
+
+          <!-- Explorer ID Card -->
+          <div class="passport-id-card">
+            <div class="id-avatar">🇮🇳</div>
+            <div class="id-details">
+              <div class="id-field">
+                <label>Explorer Name:</label>
+                <input type="text" id="passportPlayerName" class="passport-name-input" value="Brave Explorer" />
+              </div>
+              <div class="id-stats-row">
+                <span class="id-pill" id="passportLevelBadge">🌱 Level 1: Village Scout</span>
+                <span class="id-pill" id="passportTotalXp">50 XP</span>
+                <span class="id-pill">States: <b id="passportStatesCount">1 / 36</b></span>
+                <span class="id-pill">Wonders: <b id="passportPlacesCount">0</b></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Collectible Visa Stamps -->
+          <div class="passport-stamps-section">
+            <h3>Collectible State Visa Stamps:</h3>
+            <div class="passport-stamps-grid" id="passportStampsGrid">
+              <!-- Stamps injected dynamically -->
+            </div>
+          </div>
+
+          <!-- Heritage Badges -->
+          <div class="passport-badges-section">
+            <h3>Explorer Achievements & Badges:</h3>
+            <div class="passport-badges-grid" id="passportBadgesGrid">
+              <!-- Badges injected dynamically -->
+            </div>
+          </div>
+
+          <!-- Claim Certificate CTA -->
+          <div class="passport-footer">
+            <button class="btn btn-primary btn-lg" id="claimCertificateBtn">
+              📜 Generate & Download Official Certificate 🏆
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CERTIFICATE MODAL -->
+    <div class="modal-backdrop hidden" id="certificateModal">
+      <div class="modal-dialog certificate-dialog animate-scale-up">
+        <button class="modal-close-x" id="closeCertificateBtn">✖</button>
+
+        <div class="certificate-content-wrap">
+          <div class="certificate-canvas-container" id="certificateCanvasWrapper">
+            <!-- Canvas rendered here -->
+          </div>
+
+          <div class="certificate-modal-actions">
+            <button class="btn btn-primary btn-lg" id="downloadCertificateBtn">
+              💾 Download Certificate (.PNG)
+            </button>
+            <button class="btn btn-secondary btn-lg" id="printCertificateBtn">
+              🖨️ Print Certificate
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-inner">
+        <p>Interactive India Historical Places Learning Game • Designed for Young Explorers to Discover India's Heritage</p>
+        <span class="footer-badge">Satyameva Jayate 🇮🇳</span>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
